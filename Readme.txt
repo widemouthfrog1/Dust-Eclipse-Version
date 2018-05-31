@@ -1,0 +1,1 @@
+This is intended to be the same game as the other Dust on my Github account, however this one I am using eclipse as an IDE to write with in the hopes that I'll be able to add tests to make coding easier.
