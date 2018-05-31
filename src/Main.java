@@ -1,4 +1,4 @@
-import processing.core.PApplet;
+import processing.core.*;
 
 public class Main extends PApplet{
 
@@ -7,16 +7,19 @@ public class Main extends PApplet{
 		
 	}
 	
+	Player player;
+	
 	public void settings(){
-		size(300,300);
+		size(600, 600);
+		player = new Player(this, new PVector(width/2, height/2));
     }
 
     public void setup(){
-    	fill(120,50,240);
     }
 
     public void draw(){
-    	ellipse(width/2,height/2,second(),second());
+    	background(0);
+    	player.draw();
     }
 
 }
