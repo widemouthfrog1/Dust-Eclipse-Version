@@ -10,11 +10,12 @@ public class Main extends PApplet{
 	Player player;
 	
 	public void settings(){
-		size(600, 600);
-		player = new Player(this, new PVector(width/2, height/2));
+		size(1000, 700);
+		
     }
 
     public void setup(){
+    	player = new Player(this, new PVector(width/2, height/2));
     }
 
     public void draw(){
