@@ -12,6 +12,7 @@ import processing.core.*;
 public class Player {
 	private PApplet app;
 	private ArrayList<PVector> points = new ArrayList<PVector>();
+	private PVector screenPosition;
 	private PVector position;
 	private PVector velocity;
 	private PVector acceleration;
@@ -20,7 +21,8 @@ public class Player {
 	
 	Player(PApplet app, PVector position){
 		this.app = app;
-		this.position = position;
+		this.screenPosition = position;
+		this.position = new PVector(0,0);
 		this.velocity = new PVector(0,0);
 		this.acceleration = new PVector(0,0);
 		setupShape();
@@ -32,9 +34,10 @@ public class Player {
 	public void draw() {
 		reset();
 		scalePoints(2);
-		rotatePoints(new PVector(position.x - app.mouseX, position.y - app.mouseY).heading());
+		rotatePoints(new PVector(screenPosition.x - app.mouseX, screenPosition.y - app.mouseY).heading());
 		rotatePoints((float)(Math.PI/2));
 		updatePos();
+    	//PApplet.print(velocity + "\n");
 		translateByPos();
 		app.strokeWeight(6);
 		drawShape();
@@ -47,6 +50,23 @@ public class Player {
 	 */
 	public void drag(float drag) {
 		this.dragWeight = drag;
+	}
+	
+	/**
+	 * Returns the position of the player relative to the world
+	 * @return
+	 * 		Used to move everything but the player
+	 */
+	public PVector position() {
+		return position;
+	}
+	
+	/**
+	 * Sets the acceleration of the player
+	 * @param acceleration
+	 */
+	public void setAcceleration(PVector acceleration) {
+		this.acceleration = acceleration;
 	}
 	
 	/**
@@ -98,7 +118,7 @@ public class Player {
 	 */
 	private void translateByPos() {
 		for (int i = 0; i < points.size(); i++) {
-			points.set(i, new PVector(points.get(i).x +position.x, points.get(i).y +position.y));
+			points.set(i, new PVector(points.get(i).x +screenPosition.x, points.get(i).y +screenPosition.y));
 		}
 	}
 	
