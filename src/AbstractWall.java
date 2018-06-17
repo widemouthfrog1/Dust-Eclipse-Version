@@ -50,10 +50,10 @@ public abstract class AbstractWall implements Wall {
 	}
 
 	@Override
-	public void draw(PApplet app) {
+	public void draw(PApplet app, PVector offset) {
 		app.stroke(255);
 		app.strokeWeight(3);
-		app.line(this.points.get(0).x, this.points.get(0).y, this.points.get(this.points.size()-1).x, this.points.get(this.points.size()-1).y);
+		app.line(this.points.get(0).x + offset.x, this.points.get(0).y + offset.y, this.points.get(this.points.size()-1).x + offset.x, this.points.get(this.points.size()-1).y + offset.y);
 
 	}
 

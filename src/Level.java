@@ -5,6 +5,7 @@ public class Level {
 	ArrayList<Wall> walls = new ArrayList <Wall>();
 	private static int levelCounter = 0;
 	private int level;
+	private PVector offset = new PVector(0,0);
 	Level(PApplet app){
 		level = levelCounter++;
 		generate(app);
@@ -25,8 +26,16 @@ public class Level {
 	
 	public void draw(PApplet app) {
 		for(Wall wall : this.walls) {
-			wall.draw(app);
+			wall.draw(app, this.offset);
 		}
+	}
+	
+	/**
+	 * Sets the offset for the level which is used to move all objects in the level at once
+	 * @param offset
+	 */
+	public void offset(PVector offset) {
+		this.offset = offset;
 	}
 	
 	/**

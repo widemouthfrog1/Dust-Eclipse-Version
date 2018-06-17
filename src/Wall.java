@@ -25,7 +25,7 @@ public interface Wall {
 	/**
 	 * Draws the wall to the app
 	 */
-	public void draw(PApplet app);
+	public void draw(PApplet app, PVector offset);
 	
 	/**
 	 * Returns a clone of this wall

@@ -53,19 +53,19 @@ public class Main extends PApplet{
     		acceleration.add(new PVector(0,1));
     	}
     	if(buttonsPressed.get('a')) {
-    		acceleration.add(new PVector(-1,0));
+    		acceleration.add(new PVector(1,0));
     	}
     	if(buttonsPressed.get('s')) {
     		acceleration.add(new PVector(0,-1));
     	}
     	if(buttonsPressed.get('d')) {
-    		acceleration.add(new PVector(1,0));
+    		acceleration.add(new PVector(-1,0));
     	}
     	
     	player.setAcceleration(acceleration);
-    	levels.get(0).draw(this);
     	player.draw();
-    	
+    	levels.get(0).offset(player.position());
+    	levels.get(0).draw(this);
     	
     }
     
