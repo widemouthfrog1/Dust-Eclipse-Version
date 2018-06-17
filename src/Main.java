@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,11 +11,9 @@ public class Main extends PApplet{
 		
 	}
 	
-	Player player;
 	
 	Map<Character, Boolean> buttonsPressed = new HashMap<Character, Boolean>();
 	Map<Character, Boolean> buttonsReleased = new HashMap<Character, Boolean>();
-	ArrayList<Level> levels = new ArrayList<Level>();
 	
 	public void settings(){
 		size(1000, 700);
@@ -24,14 +21,12 @@ public class Main extends PApplet{
     }
 
     public void setup(){
-    	player = new Player(this, new PVector(width/2, height/2));
     	setupMaps();
-    	levels.add(new Level(this));
+    	this.rectMode(CORNER);
     }
 
     public void draw(){
     	background(0);
-    	PVector acceleration = new PVector(0,0);
     	if(buttonsReleased.get('w')) {
     		buttonsReleased.put('w', false);
     		buttonsPressed.put('w', false);
@@ -48,28 +43,42 @@ public class Main extends PApplet{
     		buttonsReleased.put('d', false);
     		buttonsPressed.put('d', false);
     	}
+    	if(buttonsReleased.get('e')) {
+    		buttonsReleased.put('e', false);
+    		buttonsPressed.put('e', false);
+    	}
     	
+    	if(buttonsPressed.get('s')) {
+    		fill(255, 0, 0);
+    		noStroke();
+    		this.rect(100, 50, 50, 50);
+    	}
     	if(buttonsPressed.get('w')) {
-    		acceleration.add(new PVector(0,1));
+    		fill(0, 255, 0);
+    		noStroke();
+    		this.rect(100, 0, 50, 50);
     	}
     	if(buttonsPressed.get('a')) {
-    		acceleration.add(new PVector(1,0));
-    	}
-    	if(buttonsPressed.get('s')) {
-    		acceleration.add(new PVector(0,-1));
+    		fill(0, 0, 255);
+    		noStroke();
+    		this.rect(50, 50, 50, 50);
     	}
     	if(buttonsPressed.get('d')) {
-    		acceleration.add(new PVector(-1,0));
+    		fill(255);
+    		noStroke();
+    		this.rect(150, 50, 50, 50);
     	}
     	
-    	player.setAcceleration(acceleration);
-    	player.draw();
-    	levels.get(0).offset(player.position());
-    	levels.get(0).draw(this);
+    	if(buttonsPressed.get('e')) {
+    		fill(255, 255, 0);
+    		noStroke();
+    		this.rect(150, 0, 50, 50);
+    	}
     	
     }
     
     public void keyPressed() {
+    	PApplet.print(key);
     	if(isValidKey(key)) {
     		buttonsPressed.put(key, true);
     	}
@@ -95,10 +104,12 @@ public class Main extends PApplet{
     	buttonsPressed.put('a', false);
     	buttonsPressed.put('s', false);
     	buttonsPressed.put('d', false);
+    	buttonsPressed.put('e', false);
     	
     	buttonsReleased.put('w', false);
     	buttonsReleased.put('a', false);
     	buttonsReleased.put('s', false);
     	buttonsReleased.put('d', false);
+    	buttonsReleased.put('e', false);
     }
 }

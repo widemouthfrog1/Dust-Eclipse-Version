@@ -40,6 +40,7 @@ public class Player {
     	//PApplet.print(velocity + "\n");
 		translateByPos();
 		app.strokeWeight(6);
+		app.stroke(255);
 		drawShape();
 		app.strokeWeight(3);
 	}
