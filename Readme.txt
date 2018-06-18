@@ -1,1 +1,1 @@
-This is intended to be the same game as the other Dust on my Github account, however this one I am using eclipse as an IDE to write with in the hopes that I'll be able to add tests to make coding easier.
+I had a bug where certain keys weren't being picked up under certain conditions. The problem turned out to be my external keyboard which didn't handle multiple button presses very well. My in-built keyboard on the other hand worked perfectly so I no longer have any need for this branch currently
