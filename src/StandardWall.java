@@ -11,6 +11,8 @@ public class StandardWall extends AbstractWall {
 		super(x1, y1, x2, y2);
 	}
 	public Wall clone() {
-		return new StandardWall(this.points());
+		AbstractWall wall = new StandardWall(this.points());
+		wall.setPlayerAtFront(this.playerAtFront);
+		return wall;
 	}
 }

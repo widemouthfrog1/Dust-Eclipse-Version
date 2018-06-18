@@ -27,9 +27,13 @@ public interface Wall {
 	 */
 	public void draw(PApplet app, PVector offset);
 	
+	public boolean playerAtFront();
+	
 	/**
 	 * Returns a clone of this wall
 	 * @return
 	 */
 	public Wall clone();
+
+	void setPlayerSide(PApplet app, PVector position);
 }

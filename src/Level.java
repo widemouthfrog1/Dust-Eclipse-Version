@@ -1,8 +1,10 @@
 import processing.core.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Level {
-	ArrayList<Wall> walls = new ArrayList <Wall>();
+	private ArrayList<Wall> walls = new ArrayList <Wall>();
+	private HashMap<Wall, Boolean> playerAtFrontMap = new HashMap<Wall, Boolean>(); 
 	private static int levelCounter = 0;
 	private int level;
 	private PVector offset = new PVector(0,0);
@@ -24,9 +26,24 @@ public class Level {
 		return wallsClone;
 	}
 	
+	public HashMap<Wall, Boolean> playerAtFrontMap(){
+		HashMap<Wall, Boolean> clone = new HashMap<Wall, Boolean>();
+		for(Wall key : playerAtFrontMap.keySet()) {
+			clone.put(key, playerAtFrontMap.get(key));
+		}
+		return clone;
+	}
+	
 	public void draw(PApplet app) {
-		for(Wall wall : this.walls) {
+		for(Wall wall : this.walls()) {
 			wall.draw(app, this.offset);
+		}
+	}
+	
+	public void updatePlayerAtFrontMap(PApplet app, PVector position) {
+		for(Wall wall : this.walls()) {
+			wall.setPlayerSide(app, position);
+			this.playerAtFrontMap.put(wall, wall.playerAtFront());
 		}
 	}
 	

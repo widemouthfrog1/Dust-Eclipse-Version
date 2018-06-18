@@ -18,6 +18,7 @@ public class Main extends PApplet{
 	Map<Character, Boolean> buttonsReleased = new HashMap<Character, Boolean>();
 	ArrayList<Level> levels = new ArrayList<Level>();
 	
+	
 	public void settings(){
 		size(1000, 700);
 		
@@ -25,7 +26,8 @@ public class Main extends PApplet{
 
     public void setup(){
     	player = new Player(this, new PVector(width/2, height/2));
-    	setupMaps();
+    	char[] pressableButtons = {'w', 'a', 's', 'd'};
+    	setupMaps(pressableButtons);
     	levels.add(new Level(this));
     }
 
@@ -52,10 +54,24 @@ public class Main extends PApplet{
     		acceleration.add(new PVector(-1,0));
     	}
     	
+    	Level level = levels.get(0);
     	player.setAcceleration(acceleration);
+    	HashMap<Wall, Boolean> before = level.playerAtFrontMap();
+    	player.updatePos();
+    	HashMap<Wall, Boolean> after = level.playerAtFrontMap();
+    	for(Wall wall : before.keySet()) {
+    		if(before.get(wall) != after.get(wall)) {
+    			//sudo code:
+    			//if in bounds of wall
+    				//set position of player to where they would have crossed the wall
+    				//change acceleration to negate velocity in small amount of time (probably 1 tick)
+    		}
+    	}
     	player.draw();
-    	levels.get(0).offset(player.position());
-    	levels.get(0).draw(this);
+    	
+    	level.offset(player.position());
+    	level.draw(this);
+    	
     	
     }
     
@@ -80,15 +96,13 @@ public class Main extends PApplet{
     	
     	return false;
     }
-    private void setupMaps() {
-    	buttonsPressed.put('w', false);
-    	buttonsPressed.put('a', false);
-    	buttonsPressed.put('s', false);
-    	buttonsPressed.put('d', false);
-    	
-    	buttonsReleased.put('w', false);
-    	buttonsReleased.put('a', false);
-    	buttonsReleased.put('s', false);
-    	buttonsReleased.put('d', false);
+    /**
+     * Adds buttons to buttonsPressed and buttonsReleased maps
+     */
+    private void setupMaps(char[] chars) {
+    	for(char c : chars) {
+    		buttonsPressed.put(c, false);
+    		buttonsReleased.put(c, false);
+    	}
     }
 }

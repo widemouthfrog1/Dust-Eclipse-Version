@@ -36,7 +36,6 @@ public class Player {
 		scalePoints(2);
 		rotatePoints(new PVector(screenPosition.x - app.mouseX, screenPosition.y - app.mouseY).heading());
 		rotatePoints((float)(Math.PI/2));
-		updatePos();
     	//PApplet.print(velocity + "\n");
 		translateByPos();
 		app.strokeWeight(6);
@@ -125,7 +124,7 @@ public class Player {
 	/**
 	 * Updates the velocity vector and then the position vector
 	 */
-	private void updatePos() {
+	public void updatePos() {
 		velocity.add(PVector.sub(this.acceleration, this.drag()));
 		position.add(velocity);
 	}
