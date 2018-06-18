@@ -32,21 +32,11 @@ public class Main extends PApplet{
     public void draw(){
     	background(0);
     	PVector acceleration = new PVector(0,0);
-    	if(buttonsReleased.get('w')) {
-    		buttonsReleased.put('w', false);
-    		buttonsPressed.put('w', false);
-    	}
-    	if(buttonsReleased.get('a')) {
-    		buttonsReleased.put('a', false);
-    		buttonsPressed.put('a', false);
-    	}
-    	if(buttonsReleased.get('s')) {
-    		buttonsReleased.put('s', false);
-    		buttonsPressed.put('s', false);
-    	}
-    	if(buttonsReleased.get('d')) {
-    		buttonsReleased.put('d', false);
-    		buttonsPressed.put('d', false);
+    	for(char c : buttonsReleased.keySet()) {
+    		if(buttonsReleased.get(c)) {
+        		buttonsReleased.put(c, false);
+        		buttonsPressed.put(c, false);
+        	}
     	}
     	
     	if(buttonsPressed.get('w')) {

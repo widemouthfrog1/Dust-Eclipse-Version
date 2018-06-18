@@ -16,7 +16,7 @@ public class Player {
 	private PVector position;
 	private PVector velocity;
 	private PVector acceleration;
-	private float dragWeight = 1;
+	private float dragWeight = 0.2f;
 	
 	
 	Player(PApplet app, PVector position){
@@ -126,7 +126,7 @@ public class Player {
 	 * Updates the velocity vector and then the position vector
 	 */
 	private void updatePos() {
-		velocity.add(acceleration.setMag(acceleration.mag() - drag()));
+		velocity.add(PVector.sub(this.acceleration, this.drag()));
 		position.add(velocity);
 	}
 	
@@ -134,8 +134,8 @@ public class Player {
 	 * Returns the drag component for velocity calculations
 	 * @return	
 	 */
-	private float drag() {
-		return velocity.mag()*dragWeight;
+	private PVector drag() {
+		return PVector.mult(velocity, dragWeight);
 	}
 	
 	/**
