@@ -70,7 +70,11 @@ public class Main extends PApplet{
     				//require negative velocity because the player is at it's new position (behind the wall) and we need to find the intersection of it's old position and current velocity
     				//which is equivalent to new position minus current velocity
     				player.setPosition(PVector.sub(wall.getIntersection(player.position().add(centre.copy()), player.velocity().mult(-1)), centre.copy()));
-    				player.setAcceleration(player.velocity().mult(-1*wall.bounciness()));
+    				PVector normal = wall.getNormal(this, player.position(), null);
+    				//player.setAcceleration(proj(wall normal) player.velocity.mult(-1*wall.bounciness())
+    				//Readable explanation: set the player's acceleration to the projection of the player's velocity on the normal to the wall and multiply that vector the wall bounciness and then inverse the vector
+    				player.setAcceleration(normal.mult(-1*wall.bounciness()*(PVector.dot(player.velocity(), normal))/(normal.magSq())));
+    				player.updatePos();
     			}
     		}
     	}

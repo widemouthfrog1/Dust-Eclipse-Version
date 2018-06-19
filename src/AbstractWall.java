@@ -85,6 +85,17 @@ public abstract class AbstractWall implements Wall {
 		return new PVector(x,y);
 	}
 	
+	public PVector getNormal(PApplet app, PVector position, PVector velocity) {
+		PVector vector = PVector.sub(points.get(0), points.get(points.size()-1));
+		float[] abc = abc(points().get(0), points().get(points.size()-1)); 
+		if(isPointInFront(app, position, abc)) {
+			vector.rotate(PApplet.PI/2);
+		}else {
+			vector.rotate(-PApplet.PI/2);
+		}
+		return vector;
+	}
+	
 	protected boolean isPointInFront(PApplet app, PVector position, float[] abc) {
 		return abc[0]*(position.x + app.width/2) + abc[1]*(position.y + app.height/2) + abc[2] > 0;
 	}

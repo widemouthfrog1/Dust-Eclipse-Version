@@ -39,7 +39,9 @@ public interface Wall {
 	
 	public PVector getIntersection(PVector position, PVector velocity);
 
-	void setPlayerSide(PApplet app, PVector position);
+	public void setPlayerSide(PApplet app, PVector position);
+	
+	public PVector getNormal(PApplet app, PVector position, PVector velocity);
 
 	public float bounciness();
 }
