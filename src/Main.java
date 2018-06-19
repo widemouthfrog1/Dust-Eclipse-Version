@@ -44,16 +44,16 @@ public class Main extends PApplet{
     	}
     	
     	if(buttonsPressed.get('w')) {
-    		acceleration.add(new PVector(0,1));
-    	}
-    	if(buttonsPressed.get('a')) {
-    		acceleration.add(new PVector(1,0));
-    	}
-    	if(buttonsPressed.get('s')) {
     		acceleration.add(new PVector(0,-1));
     	}
-    	if(buttonsPressed.get('d')) {
+    	if(buttonsPressed.get('a')) {
     		acceleration.add(new PVector(-1,0));
+    	}
+    	if(buttonsPressed.get('s')) {
+    		acceleration.add(new PVector(0,1));
+    	}
+    	if(buttonsPressed.get('d')) {
+    		acceleration.add(new PVector(1,0));
     	}
     	
     	Level level = levels.get(0);
@@ -81,7 +81,7 @@ public class Main extends PApplet{
     	}
     	player.draw();
     	
-    	level.offset(player.position());
+    	level.offset(player.position().mult(-1));
     	level.draw(this);
     	
     	
