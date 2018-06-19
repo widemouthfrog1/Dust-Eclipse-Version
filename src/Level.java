@@ -71,5 +71,6 @@ public class Level {
 		this.walls.add(new StandardWall(app.width/2+100, app.height/2+100, app.width/2+100, app.height/2-100));
 		this.walls.add(new StandardWall(app.width/2+100, app.height/2-100, app.width/2-100, app.height/2-100));
 		this.walls.add(new StandardWall(app.width/2-100, app.height/2-100, app.width/2-100, app.height/2+100));
+		this.walls.add(new StandardWall(-100, -100, 100, 100));
 	}
 }
