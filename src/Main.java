@@ -61,10 +61,12 @@ public class Main extends PApplet{
     	HashMap<Wall, Boolean> after = level.playerAtFrontMap();
     	for(Wall wall : before.keySet()) {
     		if(before.get(wall) != after.get(wall)) {
-    			//sudo code:
-    			//if in bounds of wall
+    			
+    			if(wall.inBounds(this, player.position())) {
+    				//sudo code:
     				//set position of player to where they would have crossed the wall
     				//change acceleration to negate velocity in small amount of time (probably 1 tick)
+    			}
     		}
     	}
     	player.draw();

@@ -64,15 +64,32 @@ public abstract class AbstractWall implements Wall {
 	
 	@Override
 	public void setPlayerSide(PApplet app, PVector position) {
-		float[] abc = abc();    	
-		this.playerAtFront = abc[0]*(position.x + app.width/2) + abc[1]*(position.y + app.height/2) + abc[2] > 0;//if wall.a*player.x + wall.b*player.y + wall.c > 0, player counts as being in front of wall, otherwise, player is behind wall
+		float[] abc = abc(points().get(0), points().get(points.size()-1));    	
+		this.playerAtFront = isPointInFront(app, position, abc);//if wall.a*player.x + wall.b*player.y + wall.c > 0, player counts as being in front of wall, otherwise, player is behind wall
 	}
 	
-	protected float[] abc() {
-		float x1 = points().get(0).x;
-		float y1 = points().get(0).y;
-		float x2 = points().get(points.size()-1).x;
-		float y2 = points().get(points.size()-1).y;
+	@Override
+	public boolean inBounds(PApplet app, PVector position) {
+		PVector[] normal1 = normal(points().get(0), points().get(points.size()-1), points().get(0));
+		PVector[] normal2 = normal(points().get(0), points().get(points.size()-1), points().get(points.size()-1));
+		//if the point is in front of the normal to the wall at the first point and behind the normal to the wall at the last point or vice versa, return true 
+		return isPointInFront(app, position, abc(normal1[0], normal1[1])) && !isPointInFront(app, position, abc(normal2[0], normal2[1])) || !isPointInFront(app, position, abc(normal1[0], normal1[1])) && isPointInFront(app, position, abc(normal2[0], normal2[1]));
+	}
+	
+	protected boolean isPointInFront(PApplet app, PVector position, float[] abc) {
+		return abc[0]*(position.x + app.width/2) + abc[1]*(position.y + app.height/2) + abc[2] > 0;
+	}
+	
+	protected PVector[] normal(PVector p1, PVector p2, PVector middle) {
+		PVector v = PVector.sub(p2, p1);
+		return new PVector[] {PVector.add(middle,v.rotate(PApplet.PI)), PVector.add(middle,v.rotate(-PApplet.PI))};
+	}
+	
+	protected float[] abc(PVector p1, PVector p2) {
+		float x1 = p1.x;
+		float y1 = p1.y;
+		float x2 = p2.x;
+		float y2 = p2.y;
 		float a = y1 - y2;
 		float b = x2 - x1;
 		float c = x1*y2 - y1*x2;

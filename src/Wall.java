@@ -34,6 +34,8 @@ public interface Wall {
 	 * @return
 	 */
 	public Wall clone();
+	
+	public boolean inBounds(PApplet app, PVector position);
 
 	void setPlayerSide(PApplet app, PVector position);
 }
