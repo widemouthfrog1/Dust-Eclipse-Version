@@ -52,12 +52,12 @@ public class Player {
 	}
 	
 	/**
-	 * Returns the position of the player relative to the world
+	 * Returns the position of the player relative to the world but the middle of the screen is not taken into account (to get the true position, you must add new PVector(app.width/2, app.height/2))
 	 * @return
 	 * 		Used to move everything but the player
 	 */
 	public PVector position() {
-		return position;
+		return position.copy();
 	}
 	
 	/**
@@ -66,6 +66,22 @@ public class Player {
 	 */
 	public void setAcceleration(PVector acceleration) {
 		this.acceleration = acceleration;
+	}
+	
+	/**
+	 * Updates the velocity vector and then the position vector
+	 */
+	public void updatePos() {
+		velocity.add(PVector.sub(this.acceleration, this.drag()));
+		position.add(velocity);
+	}
+	
+	/**
+	 * Set the player's position to this position
+	 * @param position
+	 */
+	public void setPosition(PVector position) {
+		this.position = position;
 	}
 	
 	/**
@@ -122,14 +138,6 @@ public class Player {
 	}
 	
 	/**
-	 * Updates the velocity vector and then the position vector
-	 */
-	public void updatePos() {
-		velocity.add(PVector.sub(this.acceleration, this.drag()));
-		position.add(velocity);
-	}
-	
-	/**
 	 * Returns the drag component for velocity calculations
 	 * @return	
 	 */
@@ -151,5 +159,10 @@ public class Player {
 		shape.setStroke(app.color(255));
 		//shape.setStroke(color(255, (int)2*health));
 		app.shape(shape);
+	}
+
+	public PVector velocity() {
+		// TODO Auto-generated method stub
+		return this.velocity.copy();
 	}
 }

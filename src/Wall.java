@@ -36,6 +36,10 @@ public interface Wall {
 	public Wall clone();
 	
 	public boolean inBounds(PApplet app, PVector position);
+	
+	public PVector getIntersection(PVector position, PVector velocity);
 
 	void setPlayerSide(PApplet app, PVector position);
+
+	public float bounciness();
 }

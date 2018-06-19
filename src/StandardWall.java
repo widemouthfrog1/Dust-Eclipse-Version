@@ -15,4 +15,8 @@ public class StandardWall extends AbstractWall {
 		wall.setPlayerAtFront(this.playerAtFront);
 		return wall;
 	}
+	@Override
+	public float bounciness() {
+		return 1f;
+	}
 }

@@ -70,10 +70,19 @@ public abstract class AbstractWall implements Wall {
 	
 	@Override
 	public boolean inBounds(PApplet app, PVector position) {
-		PVector[] normal1 = normal(points().get(0), points().get(points.size()-1), points().get(0));
-		PVector[] normal2 = normal(points().get(0), points().get(points.size()-1), points().get(points.size()-1));
+		ArrayList<PVector> points = points();
+		PVector[] normal1 = normal(points.get(0), points.get(points.size()-1), points.get(0));
+		PVector[] normal2 = normal(points.get(0), points.get(points.size()-1), points.get(points.size()-1));
 		//if the point is in front of the normal to the wall at the first point and behind the normal to the wall at the last point or vice versa, return true 
 		return isPointInFront(app, position, abc(normal1[0], normal1[1])) && !isPointInFront(app, position, abc(normal2[0], normal2[1])) || !isPointInFront(app, position, abc(normal1[0], normal1[1])) && isPointInFront(app, position, abc(normal2[0], normal2[1]));
+	}
+	
+	public PVector getIntersection(PVector position, PVector velocity) {
+		float[] abc = abc(position, velocity);
+		float[] ABC = abc(points().get(0), points().get(points.size()-1));
+		float x = (abc[1]*ABC[2] - ABC[1]*abc[2])/(ABC[1]*abc[0] - abc[1]*ABC[0]); // x = (bC - Bc)/(Ba - bA)
+		float y = (abc[0]*ABC[2] - ABC[0]*abc[2])/(ABC[0]*abc[1] - abc[0]*ABC[1]); // y = (aC - Ac)/(Ab - aB)
+		return new PVector(x,y);
 	}
 	
 	protected boolean isPointInFront(PApplet app, PVector position, float[] abc) {
@@ -82,7 +91,7 @@ public abstract class AbstractWall implements Wall {
 	
 	protected PVector[] normal(PVector p1, PVector p2, PVector middle) {
 		PVector v = PVector.sub(p2, p1);
-		return new PVector[] {PVector.add(middle,v.rotate(PApplet.PI)), PVector.add(middle,v.rotate(-PApplet.PI))};
+		return new PVector[] {PVector.add(middle,v.rotate(PApplet.PI/2)), PVector.add(middle,v.rotate(-PApplet.PI))};
 	}
 	
 	protected float[] abc(PVector p1, PVector p2) {

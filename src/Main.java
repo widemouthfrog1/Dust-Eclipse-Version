@@ -13,7 +13,7 @@ public class Main extends PApplet{
 	}
 	
 	Player player;
-	
+	PVector centre;
 	Map<Character, Boolean> buttonsPressed = new HashMap<Character, Boolean>();
 	Map<Character, Boolean> buttonsReleased = new HashMap<Character, Boolean>();
 	ArrayList<Level> levels = new ArrayList<Level>();
@@ -25,10 +25,12 @@ public class Main extends PApplet{
     }
 
     public void setup(){
-    	player = new Player(this, new PVector(width/2, height/2));
+    	centre = new PVector(width/2, height/2);
+    	player = new Player(this, centre.copy());
     	char[] pressableButtons = {'w', 'a', 's', 'd'};
     	setupMaps(pressableButtons);
     	levels.add(new Level(this));
+    	
     }
 
     public void draw(){
@@ -56,16 +58,19 @@ public class Main extends PApplet{
     	
     	Level level = levels.get(0);
     	player.setAcceleration(acceleration);
+    	level.updatePlayerAtFrontMap(this, player.position());
     	HashMap<Wall, Boolean> before = level.playerAtFrontMap();
     	player.updatePos();
+    	level.updatePlayerAtFrontMap(this, player.position());
     	HashMap<Wall, Boolean> after = level.playerAtFrontMap();
     	for(Wall wall : before.keySet()) {
     		if(before.get(wall) != after.get(wall)) {
     			
     			if(wall.inBounds(this, player.position())) {
-    				//sudo code:
-    				//set position of player to where they would have crossed the wall
-    				//change acceleration to negate velocity in small amount of time (probably 1 tick)
+    				//require negative velocity because the player is at it's new position (behind the wall) and we need to find the intersection of it's old position and current velocity
+    				//which is equivalent to new position minus current velocity
+    				player.setPosition(PVector.sub(wall.getIntersection(player.position().add(centre.copy()), player.velocity().mult(-1)), centre.copy()));
+    				player.setAcceleration(player.velocity().mult(-1*wall.bounciness()));
     			}
     		}
     	}

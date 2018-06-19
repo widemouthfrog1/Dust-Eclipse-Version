@@ -41,7 +41,7 @@ public class Level {
 	}
 	
 	public void updatePlayerAtFrontMap(PApplet app, PVector position) {
-		for(Wall wall : this.walls()) {
+		for(Wall wall : this.walls) {
 			wall.setPlayerSide(app, position);
 			this.playerAtFrontMap.put(wall, wall.playerAtFront());
 		}
