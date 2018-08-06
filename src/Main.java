@@ -17,6 +17,7 @@ public class Main extends PApplet{
 	Map<Character, Boolean> buttonsPressed = new HashMap<Character, Boolean>();
 	Map<Character, Boolean> buttonsReleased = new HashMap<Character, Boolean>();
 	ArrayList<Level> levels = new ArrayList<Level>();
+	int times = 0;
 	
 	
 	public void settings(){
@@ -67,9 +68,13 @@ public class Main extends PApplet{
     		if(before.get(wall) != after.get(wall)) {
     			
     			if(wall.inBounds(this, player.position())) {
+    				times++;
     				//require negative velocity because the player is at it's new position (behind the wall) and we need to find the intersection of it's old position and current velocity
     				//which is equivalent to new position minus current velocity
-    				player.setPosition(PVector.sub(wall.getIntersection(player.position().add(centre.copy()), player.velocity().mult(-1)), centre.copy()));
+    				if(times == 2) {
+    					PApplet.print("hi");
+    				}
+    				/*I think this line is wrong*/player.setPosition(PVector.sub(wall.getIntersection(player.position().add(centre.copy()), player.velocity().mult(-1)), centre.copy()));
     				PVector normal = wall.getNormal(this, player.position(), player.velocity()); //velocity is here in case I want a curved wall in the future
     				//player.setAcceleration(proj(wall normal) player.velocity.mult(-1*wall.bounciness())
     				//Readable explanation: set the player's acceleration to the projection of the player's velocity on the normal to the wall and multiply that vector the wall bounciness and then inverse the vector
