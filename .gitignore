@@ -1,3 +1,4 @@
 .bin/
-
-.bin\
+bin/tests/WallCollisionTests.class
+bin/game/AbstractWall.class
+*.class
