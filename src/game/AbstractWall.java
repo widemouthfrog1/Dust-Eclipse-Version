@@ -10,7 +10,7 @@ public abstract class AbstractWall implements Wall {
 	
 	public AbstractWall(ArrayList<Vector> points, Vector center){
 		this.points = points;
-		this.move(center);
+		//this.move(center);
 	}
 	
 	public AbstractWall(ArrayList<Vector> points){
@@ -20,7 +20,7 @@ public abstract class AbstractWall implements Wall {
 	AbstractWall(float x1, float y1, float x2, float y2, Vector center){
 		this.points.add(new DVector(x1, y1));
 		this.points.add(new DVector(x2, y2));
-		this.move(center);
+		//this.move(center);
 	}
 	
 	/**
@@ -62,7 +62,7 @@ public abstract class AbstractWall implements Wall {
 	public void draw(PApplet app, Vector offset) {
 		app.stroke(255);
 		app.strokeWeight(3);
-		app.line(this.points.get(0).x() + offset.x(), this.points.get(0).y() + offset.y(), this.points.get(this.points.size()-1).x() + offset.x(), this.points.get(this.points.size()-1).y() + offset.y());
+		app.line(this.points().get(0).x() + offset.x() + app.width/2, this.points().get(0).y()+ offset.y() + app.height/2, this.points().get(this.points.size()-1).x() + offset.x() + app.width/2, this.points().get(this.points.size()-1).y()+ offset.y() + app.height/2);
 	}
 	
 	@Override
@@ -84,15 +84,15 @@ public abstract class AbstractWall implements Wall {
 	
 	public Vector getIntersection(Vector position, Vector velocity) {
 		float[] abc = abc(position, velocity);
-		float[] ABC = abc(points.get(0), points.get(points.size()-1));
+		float[] ABC = abc(points().get(0), points().get(points.size()-1));
 		float x = (abc[1]*ABC[2] - ABC[1]*abc[2])/(ABC[1]*abc[0] - abc[1]*ABC[0]); // x = (bC - Bc)/(Ba - bA)
 		float y = (abc[0]*ABC[2] - ABC[0]*abc[2])/(ABC[0]*abc[1] - abc[0]*ABC[1]); // y = (aC - Ac)/(Ab - aB)
 		return new DVector(x,y);
 	}
 	
 	public Vector getNormal(Entity e) {
-		Vector one = points.get(0);
-		Vector two = points.get(points.size()-1);
+		Vector one = points().get(0);
+		Vector two = points().get(points.size()-1);
 		float dx = two.x() - one.x();
 		float dy = two.y() - one.y();
 		Vector normal;
@@ -105,8 +105,8 @@ public abstract class AbstractWall implements Wall {
 		return normal.normalise();
 	}
 	public Vector getNormal(boolean inFront) {
-		Vector one = points.get(0);
-		Vector two = points.get(points.size()-1);
+		Vector one = points().get(0);
+		Vector two = points().get(points.size()-1);
 		float dx = two.x() - one.x();
 		float dy = two.y() - one.y();
 		Vector normal;
@@ -120,7 +120,7 @@ public abstract class AbstractWall implements Wall {
 	}
 	
 	protected boolean isPointInFront(Vector position) {
-		float[] abc = this.abc(points.get(0), points.get(points.size()-1));
+		float[] abc = this.abc(points().get(0), points().get(points.size()-1));
 		return abc[0]*(position.x()) + abc[1]*(position.y()) + abc[2] > 0;
 	}
 	
@@ -152,11 +152,12 @@ public abstract class AbstractWall implements Wall {
 	 * 			A vector representing the centre of the screen
 	 */
 	public void handleCollisions(Entity e, Vector centre){
-		e.setPosition(this.getIntersection(e.position(), e.velocity().mult(-1)));
 		Vector normal = this.getNormal(e);
+		e.setPosition(this.getIntersection(e.absolutePosition(), e.velocity().mult(-1)).add(normal.setMag(0.1f)));
 		e.setAcceleration(normal.mult(-1*this.bounciness()*(Vector.dot(e.velocity(), normal))/(normal.magSq())));
 		e.updatePositionWithoutDrag();
 	}
+	
 
 	@Override
 	public Wall clone() {

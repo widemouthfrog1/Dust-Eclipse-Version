@@ -3,7 +3,6 @@ import processing.core.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import logic.DVector;
 import logic.Vector;
 
 public class Level {
@@ -11,7 +10,7 @@ public class Level {
 	private HashMap<Wall, Boolean> playerAtFrontMap = new HashMap<Wall, Boolean>(); 
 	private static int levelCounter = 0;
 	private int level;
-	private Vector offset = new DVector(0,0);
+	private Vector offset;
 	public Level(Vector center){
 		level = levelCounter++;
 		generate(center);

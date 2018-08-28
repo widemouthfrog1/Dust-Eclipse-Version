@@ -111,6 +111,7 @@ public class Game {
 	    player.updatePosition();
 	    currentLevel.updatePlayerAtFrontMap(player.absolutePosition());
 	    HashMap<Wall, Boolean> after = currentLevel.playerAtFrontMap();
+	    
 	    for(Wall wall : before.keySet()) {
 	    	if(before.get(wall) != after.get(wall)) {//if passed over wall
 	    		calculateWallCollisions(wall);
