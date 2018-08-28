@@ -1,21 +1,30 @@
+package game;
 import processing.core.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import logic.DVector;
+import logic.Vector;
 
 public class Level {
 	private ArrayList<Wall> walls = new ArrayList <Wall>();
 	private HashMap<Wall, Boolean> playerAtFrontMap = new HashMap<Wall, Boolean>(); 
 	private static int levelCounter = 0;
 	private int level;
-	private PVector offset = new PVector(0,0);
-	Level(PApplet app){
+	private Vector offset = new DVector(0,0);
+	public Level(Vector center){
 		level = levelCounter++;
-		generate(app);
+		generate(center);
 	}
 	
-	Level(ArrayList<Wall> walls){
+	public Level(ArrayList<Wall> walls){
 		level = levelCounter++;
 		this.walls = walls;
+	}
+	
+	public Level(Wall wall){
+		level = levelCounter++;
+		this.walls.add(wall);
 	}
 	
 	public ArrayList<Wall> walls(){
@@ -40,10 +49,9 @@ public class Level {
 		}
 	}
 	
-	public void updatePlayerAtFrontMap(PApplet app, PVector position) {
+	public void updatePlayerAtFrontMap(Vector absolutePosition) {
 		for(Wall wall : this.walls) {
-			wall.setPlayerSide(app, position);
-			this.playerAtFrontMap.put(wall, wall.playerAtFront());
+			this.playerAtFrontMap.put(wall, wall.getPlayerSide(absolutePosition));
 		}
 	}
 	
@@ -51,7 +59,7 @@ public class Level {
 	 * Sets the offset for the level which is used to move all objects in the level at once
 	 * @param offset
 	 */
-	public void offset(PVector offset) {
+	public void offset(Vector offset) {
 		this.offset = offset;
 	}
 	
@@ -66,12 +74,12 @@ public class Level {
 	/**
 	 * Generates a new level
 	 */
-	private void generate(PApplet app) {
-		//this.walls.add(new StandardWall(app.width/2-100, app.height/2+100, app.width/2+100, app.height/2+100));
-		//this.walls.add(new StandardWall(app.width/2+100, app.height/2+100, app.width/2+100, app.height/2-100));
-		this.walls.add(new StandardWall(app.width/2+100, app.height/2-100, app.width/2-100, app.height/2-100));
-		this.walls.add(new StandardWall(app.width/2+200, app.height/2-200, app.width/2-200, app.height/2-200));
-		this.walls.add(new StandardWall(app.width/2-100, app.height/2-100, app.width/2-100, app.height/2+100));
-		this.walls.add(new StandardWall(-200, -200, 200, 200));
+	private void generate(Vector center) {
+		//this.walls.add(new StandardWall(-100,100,100,100));
+		//this.walls.add(new StandardWall(100,100,100,-100));
+		this.walls.add(new StandardWall(100,-100,-100,-100, center));
+		this.walls.add(new StandardWall(200,-200,-200,-200, center));
+		this.walls.add(new StandardWall(-100,-100,-100,100, center));
+		this.walls.add(new StandardWall(-200, -200, 200, 200, center));
 	}
 }
