@@ -76,8 +76,8 @@ public abstract class AbstractWall implements Wall {
 		float y4 = this.points().get(1).y();
 		
 		//float t = ((x1-x3)*(y3-y4) - (y1-y3)*(x3-x4))/((x1-x2)*(y3-y4) - (y1-y2)*(x3-x4));
-		//return t <= 1 && t >= 0;
-		float u = ((x1-x2)*(y1-y3) - (y1-y2)*(x1-x3))/((x1-x2)*(y3-y4) - (y1-y2)*(x3-x4));
+		//return t <= 1 && t >= 0; //t checks the bounds of the velocity, not ideal
+		float u = -((x1-x2)*(y1-y3) - (y1-y2)*(x1-x3))/((x1-x2)*(y3-y4) - (y1-y2)*(x3-x4));
 		return u <= 1 && u >= 0;
 		
 	}
