@@ -65,15 +65,21 @@ public abstract class AbstractWall implements Wall {
 	}
 	
 	@Override
-	public boolean inBounds(Vector absolutePosition) {
-		ArrayList<Vector> points = points();
-		Vector[] relativeNormals1 = normals(points.get(0), points.get(points.size()-1), points.get(0));
-		Vector normal1 = relativeNormals1[0].add(points.get(0));
-		Vector normal2 = relativeNormals1[1].add(points.get(0));
-		Vector normala = relativeNormals1[0].add(points.get(points.size()-1));
-		Vector normalb = relativeNormals1[1].add(points.get(points.size()-1));
-		//if the point is in front of the normal to the wall at the first point and behind the normal to the wall at the last point or vice versa, return true 
-		return isPointInFrontOfLine(absolutePosition, abc(normal1, normal2)) && !isPointInFrontOfLine(absolutePosition, abc(normala, normalb)) || !isPointInFrontOfLine(absolutePosition, abc(normal1, normal2)) && isPointInFrontOfLine(absolutePosition, abc(normala, normalb));
+	public boolean inBounds(Vector position, Vector velocity) {
+		float x1 = position.x();
+		float x2 = position.x()+ velocity.x();
+		float x3 = this.points().get(0).x();
+		float x4 = this.points().get(1).x();
+		float y1 = position.y();
+		float y2 = position.y() + velocity.y();
+		float y3 = this.points().get(0).y();
+		float y4 = this.points().get(1).y();
+		
+		//float t = ((x1-x3)*(y3-y4) - (y1-y3)*(x3-x4))/((x1-x2)*(y3-y4) - (y1-y2)*(x3-x4));
+		//return t <= 1 && t >= 0;
+		float u = ((x1-x2)*(y1-y3) - (y1-y2)*(x1-x3))/((x1-x2)*(y3-y4) - (y1-y2)*(x3-x4));
+		return u <= 1 && u >= 0;
+		
 	}
 	
 	/**

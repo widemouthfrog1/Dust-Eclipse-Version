@@ -35,7 +35,7 @@ public interface Wall {
 	 */
 	public Wall clone();
 	
-	public boolean inBounds(Vector absolutePosition);
+	public boolean inBounds(Vector position, Vector Velocity);
 	
 	public Vector getIntersection(Vector position, Vector velocity);
 

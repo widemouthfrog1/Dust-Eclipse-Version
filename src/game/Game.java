@@ -138,7 +138,7 @@ public class Game {
     }
 	
 	public void calculateWallCollisions(Wall wall) {
-		if(wall.inBounds(player.absolutePosition())) {
+		if(wall.inBounds(player.absolutePosition(), player.velocity())) {
 			wall.handleCollisions(player, center);
 		}
 	}
