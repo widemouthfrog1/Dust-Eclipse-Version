@@ -76,9 +76,9 @@ public class Level {
 	private void generate(Vector center) {
 		//this.walls.add(new StandardWall(-100,100,100,100));
 		//this.walls.add(new StandardWall(100,100,100,-100));
-		this.walls.add(new StandardWall(100,-100,-100,-100, center));
-		this.walls.add(new StandardWall(200,-200,-200,-200, center));
-		this.walls.add(new StandardWall(-100,-100,-100,100, center));
-		this.walls.add(new StandardWall(-200, -200, 200, 200, center));
+		this.walls.add(new StandardWall(100,-100,-100,-100));
+		this.walls.add(new StandardWall(200,-200,-200,-200));
+		this.walls.add(new StandardWall(-100,-100,-100,100));
+		this.walls.add(new StandardWall(-200, -200, 200, 200));
 	}
 }
