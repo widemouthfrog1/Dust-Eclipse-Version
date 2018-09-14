@@ -63,4 +63,7 @@ public interface Vector {
 	}
 	
 	public float[] array();
+	
+	@Override
+	public boolean equals(Object o);
 }

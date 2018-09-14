@@ -1,9 +1,15 @@
 package logic;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A class for heavy mathematical computations in Dust
  * @author Karl Bennett
  */
 public class Math {
+	private static final double PI = 3.14159265358979323846264338;
+
 	/**
 	 * @param point1
 	 * 			The first point on line 1
@@ -104,5 +110,81 @@ public class Math {
 	 */
 	public static float k(float[] abc, Vector pos) {
 		  return abc[0]*pos.x() + abc[1]*pos.y() + abc[2];
+		}
+	/**
+	 * Given a list of points, finds the vertices
+	 * @param points
+	 * @param angle
+	 * 		The angle the angle of change must be greater than to be considered a vertex. If null will use default value of 4*PI/9
+	 * @return
+	 * 		A list of the vertices
+	 */
+	public static List<Vector> findVertices(List<Vector> points, Double angle) {
+		if(angle == null) {
+			angle = 4*PI/9;
+		}
+		  if (points.size() < 5) {
+		    return null;
+		  }
+		  List<Vector> vertices = new ArrayList<Vector>();
+		  ArrayList<Vector> simplified = new ArrayList<Vector>();
+		  ArrayList<Vector> simplifiedPoints = new ArrayList<Vector>();
+		  simplifiedPoints.add(points.get(0));
+		  for (int i = 0; i < points.size(); i += 4) {
+		    int next = i+4;
+		    while (next >= points.size()) {
+		      next--;
+		    }
+		    simplified.add(new DVector(points.get(next).x() - points.get(i).x(), points.get(next).y() - points.get(i).y())); //approximates the shape/line created by the user
+		    simplifiedPoints.add(points.get(next).copy());
+		  }
+		  vertices.add(simplifiedPoints.get(0));//add the first vertex
+		  for (int i = 0; i < simplified.size()-1; i++) {
+			  //the smaller the angle between them the closer they are to being the same
+			  if(simplified.get(i).angleBetween(simplified.get(i+1)) > angle) {
+				  //if the next one also passes it is likely the true vertex is the intersection between line i and line i+2
+				  if(simplified.get(i+1).angleBetween(simplified.get(i+2)) > angle){
+					  vertices.add(intersection(simplifiedPoints.get(i), simplifiedPoints.get(i+1), simplifiedPoints.get(i+2), simplifiedPoints.get(i+3)));
+				  }else {
+					  //otherwise the vertex is assumed to be the last point on line i
+					  vertices.add(simplifiedPoints.get(i));
+				  }
+			  }
+		  }
+		  vertices.add(simplifiedPoints.get(simplifiedPoints.size()-1));//add the last vertex
+		  return vertices;
+		}
+	/**
+	 * Returns true if the point point is left of the vector made from vectorPoint1 to vectorPoint2
+	 * @param point
+	 * @param vectorPoint1
+	 * @param vectorPoint2
+	 * @return
+	 */
+	public static boolean leftOfVector(Vector point, Vector vectorPoint1, Vector vectorPoint2 ) {
+		return (vectorPoint2.x()-vectorPoint1.x())*(point.y()-vectorPoint1.y()) - (vectorPoint2.y()-vectorPoint1.y())*(point.x()-vectorPoint1.x()) >= 0;
+	}
+	
+	/**
+	 * Removes duplicate vectors in an array of vectors
+	 * @param vectors
+	 */
+	public static void removeDuplicateVectors(ArrayList<Vector> vectors) {
+		  Vector vector1;
+		  Vector vector2;
+		  int i = 1;
+		  while (i < vectors.size()) {
+			  vector1 = vectors.get(i-1);
+			  vector2 = vectors.get(i);
+		    while (vector1.equals(vector2)) {
+		    	vectors.remove(i);
+		      if (i < vectors.size()) {
+		    	  vector2 = vectors.get(i);
+		      } else {
+		        break;
+		      }
+		    }
+		    i++;
+		  }
 		}
 }

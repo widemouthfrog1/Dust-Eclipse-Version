@@ -66,11 +66,11 @@ public class RuneHandler {
 		public DuplicateRuneException() { super(); }
 	}
 
-	public Rune getRune(ArrayList<Vector> points) {
+	public Rune getRune(List<Vector> vertices, List<Vector> points) {
 		long code = 0L;
 		for(int i = 0; i < checks.size(); i++) {
 			try {
-				if((boolean)checks.get(i).invoke(null, points)) {
+				if((boolean)checks.get(i).invoke(null, vertices)) {
 					code += Math.pow(2, i);
 				}
 			} catch (IllegalAccessException e) {
@@ -93,6 +93,8 @@ public class RuneHandler {
 			e.printStackTrace();
 		} catch (SecurityException e) {
 			e.printStackTrace();
+		} catch (NullPointerException e) {
+			return null;
 		}
 
 		return null;
