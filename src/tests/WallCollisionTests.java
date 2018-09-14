@@ -45,9 +45,8 @@ class WallCollisionTests {
 		for(int i = 0; i < 20; i++) {
 			game.player.setAcceleration(new DVector(1,0));
 			game.updatePosition(level, true);
-			if(i > 4) {
-				assertTrue(game.player.position().x() < 10, "Position was: "+game.player.position().x());
-				assertTrue(game.player.position().x() > 9.8, "Position was: "+game.player.position().x());
+			if(i > 10) {
+				assertEquals(9.9, game.player.position().x(),1e-3);
 			}
 		}
 	}
@@ -75,7 +74,7 @@ class WallCollisionTests {
 		Player player = new Player(center.copy());
 		player.setVeclocity(new DVector(20,0));
 		wall.handleCollisions(player, new DVector(0,0));
-		assertEquals(new DVector(-20, 0), player.acceleration());
+		assertEquals(new DVector(-20, 0).x(), player.acceleration().x(), 1e-5);
 	}
 	
 	@Test
@@ -85,7 +84,7 @@ class WallCollisionTests {
 		Player player = new Player(center.copy());
 		player.setVeclocity(new DVector(20,0));
 		wall.handleCollisions(player, new DVector(0,0));
-		assertEquals(new DVector(-20, 0), player.acceleration());
+		assertEquals(new DVector(-20, 0).x(), player.acceleration().x(), 1e-5);
 	}
 	
 	@Test

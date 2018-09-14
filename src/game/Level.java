@@ -7,6 +7,7 @@ import logic.Vector;
 
 public class Level {
 	private ArrayList<Wall> walls = new ArrayList <Wall>();
+	private ArrayList<Projectile> projectiles = new ArrayList<Projectile>();
 	private HashMap<Wall, Boolean> playerAtFrontMap = new HashMap<Wall, Boolean>(); 
 	private static int levelCounter = 0;
 	private int level;
@@ -68,6 +69,14 @@ public class Level {
 	 */
 	public int getLevel() {
 		return level;
+	}
+	
+	public ArrayList<Projectile> getProjectiles(){
+		return projectiles;
+	}
+	
+	public void add(Projectile projectile){
+		projectiles.add(projectile);
 	}
 	
 	/**

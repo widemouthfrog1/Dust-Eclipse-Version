@@ -7,13 +7,19 @@ import java.util.Map;
 import logic.DVector;
 import logic.Vector;
 import processing.core.PApplet;
+import processing.core.PShape;
 
 public class Game {
 	ArrayList<Level> levels = new ArrayList<Level>();
+	ArrayList<Rune> runes = new ArrayList<Rune>();
 	Level currentLevel;
 	public Player player;
 	Vector center;
-	public enum Control {UP, RIGHT, DOWN, LEFT}
+	ArrayList<Vector> currentDrawing = new ArrayList<Vector>();
+	Vector mousePosition;
+	RuneHandler viableRunes = new RuneHandler();
+	
+	public enum Control {UP, RIGHT, DOWN, LEFT, LEFTMOUSE, RIGHTMOUSE}
 	public Map<Control, Character> controlToCharacter = new HashMap<Control, Character>();
 	public Map<Character, Control> characterToControl = new HashMap<Character, Control>();
 	private Map<Control, Boolean> buttonsPressed = new HashMap<Control, Boolean>();
@@ -37,8 +43,33 @@ public class Game {
 		characterToControl.put('a', Control.LEFT);
 		buttonsPressed.put(Control.LEFT, false);
 		buttonsReleased.put(Control.LEFT, false);
+		buttonsPressed.put(Control.LEFTMOUSE, false);
+		buttonsReleased.put(Control.LEFTMOUSE, false);
+		buttonsPressed.put(Control.RIGHTMOUSE, false);
+		buttonsReleased.put(Control.RIGHTMOUSE, false);
 		
 	}
+	
+	public void setMouse(Vector position) {
+		this.mousePosition = position;
+	}
+	
+	public boolean pressed(Control button) {
+		if(!controlToCharacter.containsKey(button) && !button.equals(Control.LEFTMOUSE) && !button.equals(Control.RIGHTMOUSE)) {
+			return false;
+		}
+		buttonsPressed.put(button, true);
+		return true;
+	}
+	
+	public boolean released(Control button) {
+		if(!controlToCharacter.containsKey(button) && !button.equals(Control.LEFTMOUSE) && !button.equals(Control.RIGHTMOUSE)) {
+			return false;
+		}
+		buttonsReleased.put(button, true);
+		return true;
+	}
+	
 	public void setControl(Control control, Character button) {
 		controlToCharacter.put(control, button);
 		characterToControl.put(button, control);
@@ -60,6 +91,7 @@ public class Game {
 	//------------------------------------------------------------------------------------------------------------------------
 	//Constructor
 	public Game(int width, int height){
+		viableRunes.addRune(JaggedLine.class, JaggedLine.getChecks());
 		center = new DVector(width/2, height/2);
 		levels.add(new Level(center));
 		currentLevel = levels.get(0);
@@ -75,11 +107,19 @@ public class Game {
 	 */
 	public void updatePosition(Level level, boolean drag) {
 		for(Control c : buttonsReleased.keySet()) {
+			
     		if(buttonsReleased.get(c)) {
+    			if(c.equals(Control.LEFTMOUSE)) {
+    				this.runes.add(viableRunes.getRune(currentDrawing));
+    				this.currentDrawing.clear();
+    			}
         		buttonsReleased.put(c, false);
         		buttonsPressed.put(c, false);
         	}
     	}
+		if(buttonsPressed.get(Control.LEFTMOUSE)) {
+			this.currentDrawing.add(new DVector(mousePosition.x(), mousePosition.y()));
+		}
 	    level.updatePlayerAtFrontMap(player.absolutePosition());
 	    HashMap<Wall, Boolean> before = level.playerAtFrontMap();
 	    if(drag) {
@@ -97,13 +137,24 @@ public class Game {
 	    level.offset(player.position().mult(-1));
 	}
 	
+	
+
+
 	public void updatePosition() {
 		for(Control c : buttonsReleased.keySet()) {
+			
     		if(buttonsReleased.get(c)) {
+    			if(c.equals(Control.LEFTMOUSE)) {
+    				this.runes.add(viableRunes.getRune(currentDrawing));
+    				this.currentDrawing = new ArrayList<Vector>();
+    			}
         		buttonsReleased.put(c, false);
         		buttonsPressed.put(c, false);
         	}
     	}
+		if(buttonsPressed.get(Control.LEFTMOUSE)) {
+			this.currentDrawing.add(new DVector(mousePosition.x(), mousePosition.y()));
+		}
 		Vector acceleration = new DVector(0,0);
     	setAcceleration(acceleration);
 	    currentLevel.updatePlayerAtFrontMap(player.absolutePosition());
@@ -118,6 +169,10 @@ public class Game {
 	    	}
 	    }
 	    currentLevel.offset(player.position().mult(-1));
+	}
+	
+	public void handleDrawing() {
+		
 	}
 	
 	public void setAcceleration(Vector acceleration) {
@@ -148,6 +203,18 @@ public class Game {
 		Level level = levels.get(0);
 		player.draw(app);
     	level.draw(app);
+    	for(Rune rune : this.runes) {
+    		rune.draw(app);
+    	}
+    	PShape currentDrawing = app.createShape();
+    	currentDrawing.beginShape();
+	    for (int i = 0; i < this.currentDrawing.size()-1; i++) {
+	    	currentDrawing.vertex(this.currentDrawing.get(i).x(), this.currentDrawing.get(i).y());
+	    }
+	    currentDrawing.endShape();
+	    currentDrawing.setStroke(app.color(255));
+	    currentDrawing.setFill(false);
+	    app.shape(currentDrawing);
 	}
 	
 	
