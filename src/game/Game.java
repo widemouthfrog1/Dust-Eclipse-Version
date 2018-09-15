@@ -183,6 +183,9 @@ public class Game {
 	    for(Rune rune: runes) {
 	    	rune.offset(player.position().mult(-1));
 	    }
+	    for(Vector point : this.currentDrawing) {
+	    	point.add(player.position().mult(-1));
+	    }
 	}
 	
 	public void handleDrawing() {
