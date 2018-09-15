@@ -39,11 +39,11 @@ public class JaggedLine extends AbstractProjectile {
 		return true;
 	}
 	
-	public static boolean isBolt(ArrayList<Vector> points) {
+	public static List<Vector> isBolt(ArrayList<Vector> points) {
+		List<Vector> bolt = new ArrayList<Vector>();
 		if(points.size() < 4) {
-			return false;
+			return bolt;
 		}
-		boolean isBolt = true;
 		for(int i = 0; i < points.size()-4;i++) {
 			if(
 					!(logic.Math.leftOfVector(points.get(i+2),points.get(i),points.get(i+1)) &&
@@ -52,10 +52,18 @@ public class JaggedLine extends AbstractProjectile {
 					logic.Math.leftOfVector(points.get(i+3),points.get(i+1),points.get(i+2)))
 					
 			) {
-				isBolt = false;
+				break;
+			}
+			if(bolt.isEmpty()) {
+				bolt.add(points.get(i));
+				bolt.add(points.get(i+1));
+				bolt.add(points.get(i+2));
+				bolt.add(points.get(i+3));
+			}else {
+				bolt.add(points.get(i+3));
 			}
 		}
-		return isBolt;
+		return bolt;
 	}
 
 
@@ -64,10 +72,8 @@ public class JaggedLine extends AbstractProjectile {
 		try {
 			checks.add(JaggedLine.class.getDeclaredMethod("isBolt", ArrayList.class));
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return checks;

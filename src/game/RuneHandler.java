@@ -17,7 +17,7 @@ import logic.Vector;
  */
 public class RuneHandler {
 	private TreeMap<Method, Class<? extends Rune>> treeMap = new TreeMap<Method, Class<? extends Rune>>();
-	
+	private Rune defaultRune = null;
 	RuneHandler(){}
 	
 	/**
@@ -25,7 +25,7 @@ public class RuneHandler {
 	 * @param runeClass
 	 * 		A class that extends Rune to be included in this game
 	 * @param checks
-	 * 		Methods must be static and return a boolean
+	 * 		Methods must be static and return a List of points (of type Vector)
 	 */
 	public void addRune(Class<? extends Rune> runeClass, List<Method> checks) {
 		
@@ -55,10 +55,20 @@ public class RuneHandler {
 			try {
 				Method method = treeMap.next(); 
 				if(method == null) {
-					break;
+					//The drawing matched no known rune
+					return defaultRune;
 				}
-				if((boolean)method.invoke(null, vertices)) {
+				@SuppressWarnings("unchecked")
+				List<Vector> passed = (List<Vector>) method.invoke(null, vertices);
+				if(!passed.isEmpty()) {
 					route.add(method);
+					
+					//remove all but the last point of passed
+					vertices.removeAll(passed);
+					if(vertices.size() == 0) {
+						break; //break if all vertices have been used up
+					}
+					vertices.add(0,passed.get(passed.size()-1));
 				}else {
 					treeMap.previous();
 				}
@@ -87,6 +97,6 @@ public class RuneHandler {
 			return null;
 		}
 
-		return null;
+		return defaultRune;
 	}
 }
