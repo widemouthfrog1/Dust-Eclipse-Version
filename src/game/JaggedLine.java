@@ -22,7 +22,7 @@ public class JaggedLine extends AbstractProjectile {
 		PShape shape = app.createShape();
 	    shape.beginShape();
 	    for (int i = 0; i < points.size()-1; i++) {
-	      shape.vertex(points.get(i).x(), points.get(i).y());
+	      shape.vertex(points.get(i).x()+offset.x(), points.get(i).y()+offset.y());
 	    }
 	    shape.endShape();
 	    shape.setStroke(app.color(255));
@@ -35,16 +35,12 @@ public class JaggedLine extends AbstractProjectile {
 
 	}
 	
-	public static boolean checkLine(ArrayList<Vector> points) {
-		return true;
-	}
-	
 	public static List<Vector> isBolt(ArrayList<Vector> points) {
 		List<Vector> bolt = new ArrayList<Vector>();
 		if(points.size() < 4) {
 			return bolt;
 		}
-		for(int i = 0; i < points.size()-4;i++) {
+		for(int i = 0; i < points.size()-3;i++) {
 			if(
 					!(logic.Math.leftOfVector(points.get(i+2),points.get(i),points.get(i+1)) &&
 					!logic.Math.leftOfVector(points.get(i+3),points.get(i+1),points.get(i+2)) ||

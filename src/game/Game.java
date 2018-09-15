@@ -110,8 +110,12 @@ public class Game {
 			
     		if(buttonsReleased.get(c)) {
     			if(c.equals(Control.LEFTMOUSE)) {
+    				logic.Math.removeDuplicateVectors(currentDrawing);
     				this.runes.add(viableRunes.getRune(logic.Math.findVertices(currentDrawing, null), currentDrawing));
-    				this.currentDrawing.clear();
+    				if(runes.get(runes.size()-1) == null) {
+    					runes.remove(runes.size()-1);
+    				}
+    				this.currentDrawing = new ArrayList<Vector>();
     			}
         		buttonsReleased.put(c, false);
         		buttonsPressed.put(c, false);
@@ -146,6 +150,9 @@ public class Game {
     		if(buttonsReleased.get(c)) {
     			if(c.equals(Control.LEFTMOUSE)) {
     				logic.Math.removeDuplicateVectors(currentDrawing);
+    				for(Vector point : this.currentDrawing) {
+    					point.add(player.position());
+    				}
     				this.runes.add(viableRunes.getRune(logic.Math.findVertices(currentDrawing, null), currentDrawing));
     				if(runes.get(runes.size()-1) == null) {
     					runes.remove(runes.size()-1);
@@ -173,6 +180,9 @@ public class Game {
 	    	}
 	    }
 	    currentLevel.offset(player.position().mult(-1));
+	    for(Rune rune: runes) {
+	    	rune.offset(player.position().mult(-1));
+	    }
 	}
 	
 	public void handleDrawing() {
