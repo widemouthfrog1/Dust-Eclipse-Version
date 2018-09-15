@@ -5,10 +5,15 @@ import java.util.List;
 
 public class TreeMap<K,V> {
 	private Node<K,V> root;
-	private Node<K,V> pointer = root;
+	private Node<K,V> pointer;
 
 	public TreeMap(V defaultValue) {
 		root = new Node<K,V>(null, defaultValue, null);
+		pointer = root;
+	}
+	public TreeMap() {
+		root = new Node<K,V>(null, null, null);
+		pointer = root;
 	}
 	
 	public boolean add(V value, List<K> route) {
@@ -59,6 +64,7 @@ public class TreeMap<K,V> {
 		private List<Node<K,V>> children;
 		Node(K key, V value, Node<K,V> parent){
 			this.key = key;
+			this.value = value;
 			this.parent = parent;
 			this.children = new ArrayList<Node<K,V>>();
 		}
@@ -104,9 +110,10 @@ public class TreeMap<K,V> {
 				children.add(new Node<K,V>(route.get(0),value, this));
 				return true;
 			}else {
-				Node<K,V> next = this.getImmediateChild(route.remove(0));
+				K key = route.remove(0);
+				Node<K,V> next = this.getImmediateChild(key);
 				if(next == null) {
-					return false;
+					return new Node<K,V>(key, null, this).addChild(value, route);
 				}
 				return next.addChild(value, route);
 			}

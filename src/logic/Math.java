@@ -143,7 +143,7 @@ public class Math {
 			  //the smaller the angle between them the closer they are to being the same
 			  if(simplified.get(i).angleBetween(simplified.get(i+1)) > angle) {
 				  //if the next one also passes it is likely the true vertex is the intersection between line i and line i+2
-				  if(simplified.get(i+1).angleBetween(simplified.get(i+2)) > angle){
+				  if(i+2 != simplified.size() && simplified.get(i+1).angleBetween(simplified.get(i+2)) > angle){
 					  vertices.add(intersection(simplifiedPoints.get(i), simplifiedPoints.get(i+1), simplifiedPoints.get(i+2), simplifiedPoints.get(i+3)));
 				  }else {
 					  //otherwise the vertex is assumed to be the last point on line i

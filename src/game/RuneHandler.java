@@ -3,10 +3,9 @@ package game;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import logic.TreeMap;
 import logic.Vector;
 
 /**
@@ -17,39 +16,22 @@ import logic.Vector;
  *
  */
 public class RuneHandler {
-	private Map<Long, Class<? extends Rune>> classes = new HashMap<Long, Class<? extends Rune>>();
-	private ArrayList<Method> checks = new ArrayList<Method>();
+	private TreeMap<Method, Class<? extends Rune>> treeMap = new TreeMap<Method, Class<? extends Rune>>();
 	
-	RuneHandler(){
-		
-	}
+	RuneHandler(){}
 	
 	/**
-	 * Adds the Rune type to the handler so that  
+	 * Adds the Rune type to the handler. Throws a DuplicateRuneException if there is already a rune with those checks in the handler.
 	 * @param runeClass
 	 * 		A class that extends Rune to be included in this game
 	 * @param checks
 	 * 		Methods must be static and return a boolean
 	 */
 	public void addRune(Class<? extends Rune> runeClass, List<Method> checks) {
-		//Add method to list without duplicates
 		
-		for(Method method : checks) {
-			if(!this.checks.contains(method)) {
-				this.checks.add(method);
-			}
-		}
-		long code = 0L;
-		for(int i = 0; i < this.checks.size(); i++) {
-			if(checks.contains(this.checks.get(i))){
-				code += (long)Math.pow(2,i);
-			}
-		}
-		if(this.classes.containsKey(code)) {
+		if(!treeMap.add(runeClass, checks)) {
 			throw new DuplicateRuneException();
 		}
-		//code = long representation of which checks need to pass to create this rune
-		this.classes.put(code, runeClass);
 		
 	}
 	/**
@@ -67,11 +49,18 @@ public class RuneHandler {
 	}
 
 	public Rune getRune(List<Vector> vertices, List<Vector> points) {
-		long code = 0L;
-		for(int i = 0; i < checks.size(); i++) {
+		treeMap.resetPointer();
+		List<Method> route = new ArrayList<Method>();
+		while(true) {	
 			try {
-				if((boolean)checks.get(i).invoke(null, vertices)) {
-					code += Math.pow(2, i);
+				Method method = treeMap.next(); 
+				if(method == null) {
+					break;
+				}
+				if((boolean)method.invoke(null, vertices)) {
+					route.add(method);
+				}else {
+					treeMap.previous();
 				}
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
@@ -81,8 +70,9 @@ public class RuneHandler {
 				e.printStackTrace();
 			}
 		}
+		
 		try {
-			return (Rune) (classes.get(code)).getDeclaredConstructors()[0].newInstance(points);
+			return (Rune) (treeMap.get(route)).getDeclaredConstructors()[0].newInstance(points);
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
