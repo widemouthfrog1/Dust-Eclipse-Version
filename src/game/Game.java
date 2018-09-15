@@ -14,6 +14,7 @@ public class Game {
 	ArrayList<Rune> runes = new ArrayList<Rune>();
 	Level currentLevel;
 	public Player player;
+	public Vector offset = new DVector(0,0);
 	Vector center;
 	ArrayList<Vector> currentDrawing = new ArrayList<Vector>();
 	Vector mousePosition;
@@ -145,14 +146,15 @@ public class Game {
 
 
 	public void updatePosition() {
+		for(Vector point : this.currentDrawing) {
+			point.sub(offset);
+		}
 		for(Control c : buttonsReleased.keySet()) {
 			
     		if(buttonsReleased.get(c)) {
     			if(c.equals(Control.LEFTMOUSE)) {
     				logic.Math.removeDuplicateVectors(currentDrawing);
-    				for(Vector point : this.currentDrawing) {
-    					point.add(player.position());
-    				}
+    				
     				this.runes.add(viableRunes.getRune(logic.Math.findVertices(currentDrawing, null), currentDrawing));
     				if(runes.get(runes.size()-1) == null) {
     					runes.remove(runes.size()-1);
@@ -164,7 +166,7 @@ public class Game {
         	}
     	}
 		if(buttonsPressed.get(Control.LEFTMOUSE)) {
-			this.currentDrawing.add(new DVector(mousePosition.x(), mousePosition.y()));
+			this.currentDrawing.add(new DVector(mousePosition.x()+player.position().x(), mousePosition.y()+player.position().y()));
 		}
 		Vector acceleration = new DVector(0,0);
     	setAcceleration(acceleration);
@@ -179,9 +181,14 @@ public class Game {
 	    		calculateWallCollisions(wall);
 	    	}
 	    }
-	    currentLevel.offset(player.position().mult(-1));
+	    this.offset = player.position().mult(-1);
+	    currentLevel.offset(offset);
 	    for(Rune rune: runes) {
-	    	rune.offset(player.position().mult(-1));
+	    	rune.offset(offset);
+	    }
+	    
+	    for(Vector point : this.currentDrawing) {
+	    	point.add(offset);
 	    }
 	}
 	
