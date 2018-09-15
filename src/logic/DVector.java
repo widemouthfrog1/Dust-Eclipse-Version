@@ -1,7 +1,5 @@
 package logic;
 
-import java.math.BigDecimal;
-
 import processing.core.PVector;
 
 public class DVector implements Vector {

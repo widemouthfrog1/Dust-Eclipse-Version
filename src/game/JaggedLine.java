@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import logic.DVector;
 import logic.Vector;
 import processing.core.PApplet;
 import processing.core.PShape;
