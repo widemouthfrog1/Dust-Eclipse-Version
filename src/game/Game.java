@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import game.object.entity.Player;
+import game.object.entity.projectile.JaggedLine;
+import game.object.rune.Rune;
+import game.object.rune.RuneHandler;
+import game.object.stationary.Wall;
 import logic.DVector;
 import logic.Vector;
 import processing.core.PApplet;

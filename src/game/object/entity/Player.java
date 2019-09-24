@@ -1,4 +1,4 @@
-package game;
+package game.object.entity;
 import java.util.ArrayList;
 
 import logic.DVector;

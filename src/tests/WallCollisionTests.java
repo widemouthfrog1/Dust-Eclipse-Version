@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import game.*;
+import game.object.entity.Player;
+import game.object.stationary.StandardWall;
+import game.object.stationary.Wall;
 import logic.*;
 
 

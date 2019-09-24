@@ -1,4 +1,4 @@
-package game;
+package game.object.rune;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -18,7 +18,7 @@ import logic.Vector;
 public class RuneHandler {
 	private TreeMap<Method, Class<? extends Rune>> treeMap = new TreeMap<Method, Class<? extends Rune>>();
 	private Rune defaultRune = null;
-	RuneHandler(){}
+	public RuneHandler(){}
 	
 	/**
 	 * Adds the Rune type to the handler. Throws a DuplicateRuneException if there is already a rune with those checks in the handler.

@@ -1,14 +1,15 @@
-package game;
+package game.object.entity.projectile;
 
 import java.util.ArrayList;
 
+import game.object.rune.Rune;
 import logic.Vector;
 import processing.core.PApplet;
 
 public abstract class AbstractProjectile extends Rune implements Projectile {
 	
 	
-	AbstractProjectile(ArrayList<Vector> points){
+	protected AbstractProjectile(ArrayList<Vector> points){
 		super(points);
 	}
 	@Override

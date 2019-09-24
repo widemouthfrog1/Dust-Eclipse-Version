@@ -1,4 +1,4 @@
-package game;
+package game.object.stationary;
 import java.util.ArrayList;
 
 import logic.Vector;

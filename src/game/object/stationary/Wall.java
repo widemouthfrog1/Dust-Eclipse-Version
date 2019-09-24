@@ -1,6 +1,7 @@
-package game;
+package game.object.stationary;
 import java.util.ArrayList;
 
+import game.object.entity.Entity;
 import logic.Vector;
 import processing.core.*;
 

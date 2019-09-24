@@ -1,4 +1,4 @@
-package game;
+package game.object.rune;
 
 import java.util.ArrayList;
 

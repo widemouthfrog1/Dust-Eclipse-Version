@@ -1,4 +1,4 @@
-package game;
+package game.object.entity.projectile;
 
 import java.util.ArrayList;
 

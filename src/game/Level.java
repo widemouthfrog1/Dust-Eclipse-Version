@@ -3,6 +3,9 @@ import processing.core.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import game.object.entity.projectile.Projectile;
+import game.object.stationary.StandardWall;
+import game.object.stationary.Wall;
 import logic.Vector;
 
 public class Level {
