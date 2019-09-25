@@ -38,23 +38,17 @@ public class Level {
 		return wallsClone;
 	}
 	
-	public HashMap<Wall, Boolean> playerAtFrontMap(){
-		HashMap<Wall, Boolean> clone = new HashMap<Wall, Boolean>();
-		for(Wall key : playerAtFrontMap.keySet()) {
-			clone.put(key, playerAtFrontMap.get(key));
+	public HashMap<Wall, Boolean> pointInFrontOfWallMap(Vector position){
+		HashMap<Wall, Boolean> map = new HashMap<Wall, Boolean>();
+		for(Wall wall : this.walls) {
+			map.put(wall, wall.getPlayerSide(position));
 		}
-		return clone;
+		return map;
 	}
 	
 	public void draw(PApplet app) {
 		for(Wall wall : this.walls()) {
 			wall.draw(app, this.offset);
-		}
-	}
-	
-	public void updatePlayerAtFrontMap(Vector absolutePosition) {
-		for(Wall wall : this.walls) {
-			this.playerAtFrontMap.put(wall, wall.getPlayerSide(absolutePosition));
 		}
 	}
 	

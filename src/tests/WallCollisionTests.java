@@ -21,7 +21,7 @@ class WallCollisionTests {
 		game.player.setAcceleration(new DVector(1,0));
 		for(int i = 0; i < 10; i++) {
 			game.player.setAcceleration(new DVector(1,0));
-			game.updatePosition(level, true);
+			game.update(level, true);
 		}
 		
 		assertEquals(0, game.player.position().y());
@@ -34,7 +34,7 @@ class WallCollisionTests {
 		game.player.setAcceleration(new DVector(1,0));
 		for(int i = 0; i < 10; i++) {
 			game.player.setAcceleration(new DVector(1,0));
-			game.updatePosition(level, true);
+			game.update(level, true);
 		}
 		
 		assertEquals(0, game.player.position().y());
@@ -47,7 +47,7 @@ class WallCollisionTests {
 		
 		for(int i = 0; i < 20; i++) {
 			game.player.setAcceleration(new DVector(1,0));
-			game.updatePosition(level, true);
+			game.update(level, true);
 			if(i > 10) {
 				assertEquals(9.9, game.player.position().x(),1e-3);
 			}

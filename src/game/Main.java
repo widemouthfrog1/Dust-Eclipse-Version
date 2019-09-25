@@ -24,36 +24,35 @@ public class Main extends PApplet {
 
 	public void draw() {
 		background(0);
-		game.setMouse(new DVector(this.mouseX, this.mouseY));
-		game.updatePosition();
+		game.update(new DVector(this.mouseX, this.mouseY));
 		game.draw(this);
 
 	}
 
 	public void mousePressed() {
 		if (mouseButton == RIGHT) {
-			game.pressed(Game.Control.RIGHTMOUSE);
+			game.press("RIGHTMOUSE");
 		}
 		if (mouseButton == LEFT) {
-			game.pressed(Game.Control.LEFTMOUSE);
+			game.press("LEFTMOUSE");
 		}
 	}
 
 	public void mouseReleased() {
 
 		if (mouseButton == RIGHT) {
-			game.released(Game.Control.RIGHTMOUSE);
+			game.release("RIGHTMOUSE");
 		}
 		if (mouseButton == LEFT) {
-			game.released(Game.Control.LEFTMOUSE);
+			game.release("LEFTMOUSE");
 		}
 	}
 
 	public void keyPressed() {
-		game.pressed(key);
+		game.press(""+key);
 	}
 
 	public void keyReleased() {
-		game.released(key);
+		game.release(""+key);
 	}
 }

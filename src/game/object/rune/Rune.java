@@ -8,8 +8,10 @@ import processing.core.PApplet;
 public abstract class Rune {
 	protected Vector offset;
 	protected ArrayList<Vector> points;
+	
+	@SuppressWarnings("unchecked")
 	public Rune(ArrayList<Vector> points){
-		this.points = points;
+		this.points = (ArrayList<Vector>) points.clone();
 	}
 	public abstract void draw(PApplet app);
 	

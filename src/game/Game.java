@@ -8,6 +8,7 @@ import game.object.entity.Player;
 import game.object.entity.projectile.JaggedLine;
 import game.object.rune.Rune;
 import game.object.rune.RuneHandler;
+import game.object.stationary.InactiveRune;
 import game.object.stationary.Wall;
 import logic.DVector;
 import logic.Vector;
@@ -22,77 +23,64 @@ public class Game {
 	public Vector offset = new DVector(0,0);
 	Vector center;
 	ArrayList<Vector> currentDrawing = new ArrayList<Vector>();
-	Vector mousePosition;
 	RuneHandler viableRunes = new RuneHandler();
 	
-	public enum Control {UP, RIGHT, DOWN, LEFT, LEFTMOUSE, RIGHTMOUSE}
-	public Map<Control, Character> controlToCharacter = new HashMap<Control, Character>();
-	public Map<Character, Control> characterToControl = new HashMap<Character, Control>();
-	private Map<Control, Boolean> buttonsPressed = new HashMap<Control, Boolean>();
-	private Map<Control, Boolean> buttonsReleased = new HashMap<Control, Boolean>();
-	public void setControlsToDefault() {
-		controlToCharacter.clear();
-		characterToControl.clear();
-		controlToCharacter.put(Control.UP, 'w');
-		characterToControl.put('w', Control.UP);
-		buttonsPressed.put(Control.UP, false);
-		buttonsReleased.put(Control.UP, false);
-		controlToCharacter.put(Control.RIGHT, 'd');
-		characterToControl.put('d', Control.RIGHT);
-		buttonsPressed.put(Control.RIGHT, false);
-		buttonsReleased.put(Control.RIGHT, false);
-		controlToCharacter.put(Control.DOWN, 's');
-		characterToControl.put('s', Control.DOWN);
-		buttonsPressed.put(Control.DOWN, false);
-		buttonsReleased.put(Control.DOWN, false);
-		controlToCharacter.put(Control.LEFT, 'a');
-		characterToControl.put('a', Control.LEFT);
-		buttonsPressed.put(Control.LEFT, false);
-		buttonsReleased.put(Control.LEFT, false);
-		buttonsPressed.put(Control.LEFTMOUSE, false);
-		buttonsReleased.put(Control.LEFTMOUSE, false);
-		buttonsPressed.put(Control.RIGHTMOUSE, false);
-		buttonsReleased.put(Control.RIGHTMOUSE, false);
-		
+	private ControlArray controls = new ControlArray();
+	
+	private void createControls() {
+		controls.addControl("UP", "w");
+		controls.addControl("DOWN", "s");
+		controls.addControl("LEFT", "a");
+		controls.addControl("RIGHT", "d");
+		controls.addControl("LEFTMOUSE", "left mouse");
+		controls.addControl("RIGHTMOUSE", "right mouse");
 	}
 	
-	public void setMouse(Vector position) {
-		this.mousePosition = position;
+	/**
+	 * Sets states of all controls that were in state PRESSED or RELEASED to HELD or INACTIVE respectively.
+	 */
+	private void updateControls() {
+		for(Control control : controls.getList()) {
+			if(control.state() == Control.State.PRESSED) {
+				control.setState(Control.State.HELD);
+			}else if(control.state() == Control.State.RELEASED) {
+				control.setState(Control.State.INACTIVE);
+			}
+		}
 	}
 	
-	public boolean pressed(Control button) {
-		if(!controlToCharacter.containsKey(button) && !button.equals(Control.LEFTMOUSE) && !button.equals(Control.RIGHTMOUSE)) {
-			return false;
+	public boolean press(String button) {
+		ArrayList<Control> controlList = controls.getList();
+		for(int i = 0; i < controlList.size(); i++) {
+			Control control = controlList.get(i);
+			if(control.button().equals(button)) {
+				control.setState(Control.State.PRESSED);
+				return true;
+			}
 		}
-		buttonsPressed.put(button, true);
-		return true;
+		return false;
 	}
 	
-	public boolean released(Control button) {
-		if(!controlToCharacter.containsKey(button) && !button.equals(Control.LEFTMOUSE) && !button.equals(Control.RIGHTMOUSE)) {
-			return false;
+	public boolean release(String button) {
+		ArrayList<Control> controlList = controls.getList();
+		for(int i = 0; i < controlList.size(); i++) {
+			Control control = controlList.get(i);
+			if(control.button().equals(button)) {
+				control.setState(Control.State.RELEASED);
+				return true;
+			}
 		}
-		buttonsReleased.put(button, true);
-		return true;
+		return false;
 	}
 	
-	public void setControl(Control control, Character button) {
-		controlToCharacter.put(control, button);
-		characterToControl.put(button, control);
-	}
-	public boolean pressed(Character button) {
-		if(!characterToControl.containsKey(button)) {
-			return false;
+	public void setControl(String name, String button) {
+		ArrayList<Control> controlList = controls.getList();
+		for(int i = 0; i < controlList.size(); i++) {
+			Control control = controlList.get(i);
+			if(control.name().equals(name)) {
+				control.updateButton(button);
+			}
 		}
-		buttonsPressed.put(characterToControl.get(button), true);
-		return true;
-	}
-	public boolean released(Character button) {
-		if(!characterToControl.containsKey(button)) {
-			return false;
-		}
-		buttonsReleased.put(characterToControl.get(button), true);
-		return true;
 	}
 	//------------------------------------------------------------------------------------------------------------------------
 	//Constructor
@@ -102,7 +90,7 @@ public class Game {
 		levels.add(new Level(center));
 		currentLevel = levels.get(0);
     	player = new Player(center.copy());
-    	setControlsToDefault();
+    	createControls();
 	}
 	/**
 	 * Updates the position of the player in the level without changing the acceleration
@@ -111,81 +99,87 @@ public class Game {
 	 * @param drag
 	 * 			boolean that states whether drag calculations are active
 	 */
-	public void updatePosition(Level level, boolean drag) {
-		for(Control c : buttonsReleased.keySet()) {
-			
-    		if(buttonsReleased.get(c)) {
-    			if(c.equals(Control.LEFTMOUSE)) {
-    				logic.Math.removeDuplicateVectors(currentDrawing);
-    				this.runes.add(viableRunes.getRune(logic.Math.findVertices(currentDrawing, null), currentDrawing));
-    				if(runes.get(runes.size()-1) == null) {
-    					runes.remove(runes.size()-1);
-    				}
-    				this.currentDrawing = new ArrayList<Vector>();
-    			}
-        		buttonsReleased.put(c, false);
-        		buttonsPressed.put(c, false);
-        	}
-    	}
-		if(buttonsPressed.get(Control.LEFTMOUSE)) {
+	public void update(Level level, boolean drag, Vector mousePosition) {
+		
+		//On left mouse release
+		if(controls.getControl("LEFTMOUSE").state().equals(Control.State.RELEASED)) {
+			logic.Math.removeDuplicateVectors(currentDrawing);
+			this.runes.add(new InactiveRune(this.currentDrawing));
+			if(runes.get(runes.size()-1) == null) {
+				runes.remove(runes.size()-1);
+			}
+			this.currentDrawing = new ArrayList<Vector>();
+		}
+		
+		//On left mouse press or hold
+		if(controls.getControl("LEFTMOUSE").state().equals(Control.State.PRESSED) || controls.getControl("LEFTMOUSE").state().equals(Control.State.HELD)) {
+			//copy mouse position
 			this.currentDrawing.add(new DVector(mousePosition.x(), mousePosition.y()));
 		}
-	    level.updatePlayerAtFrontMap(player.absolutePosition());
-	    HashMap<Wall, Boolean> before = level.playerAtFrontMap();
+		
+		//handle player collisions with any walls
+		
+		
+	    Vector position1 = player.absolutePosition();
 	    if(drag) {
 	    	player.updatePosition();
 	    }else {
 	    	player.updatePositionWithoutDrag();
 	    }
-	    level.updatePlayerAtFrontMap(player.absolutePosition());
-	    HashMap<Wall, Boolean> after = level.playerAtFrontMap();
-	    for(Wall wall : before.keySet()) {
+	    Vector position2 = player.absolutePosition();
+	    this.wallCollision(position1, position2, level);
+	    
+	    level.offset(player.position().mult(-1));
+	    
+	    this.updateControls();
+	}
+	
+	public boolean wallCollision(Vector position1, Vector position2, Level level) {
+		HashMap<Wall, Boolean> before = level.pointInFrontOfWallMap(position1);
+		HashMap<Wall, Boolean> after = level.pointInFrontOfWallMap(position1);
+		for(Wall wall : before.keySet()) {
 	    	if(before.get(wall) != after.get(wall)) {//if passed over wall
-	    		calculateWallCollisions(wall);
+	    		if(wall.inBounds(player.absolutePosition(), player.velocity())) {
+	    			wall.handleCollisions(player, center);
+	    		}
+	    		return true;
 	    	}
 	    }
-	    level.offset(player.position().mult(-1));
+		return false;
 	}
 	
 	
 
 
-	public void updatePosition() {
+	public void update(Vector mousePosition) {
+		
 		for(Vector point : this.currentDrawing) {
 			point.sub(offset);
 		}
-		for(Control c : buttonsReleased.keySet()) {
-			
-    		if(buttonsReleased.get(c)) {
-    			if(c.equals(Control.LEFTMOUSE)) {
-    				logic.Math.removeDuplicateVectors(currentDrawing);
-    				
-    				this.runes.add(viableRunes.getRune(logic.Math.findVertices(currentDrawing, null), currentDrawing));
-    				if(runes.get(runes.size()-1) == null) {
-    					runes.remove(runes.size()-1);
-    				}
-    				this.currentDrawing = new ArrayList<Vector>();
-    			}
-        		buttonsReleased.put(c, false);
-        		buttonsPressed.put(c, false);
-        	}
-    	}
-		if(buttonsPressed.get(Control.LEFTMOUSE)) {
-			this.currentDrawing.add(new DVector(mousePosition.x()+player.position().x(), mousePosition.y()+player.position().y()));
+		//On left mouse release
+		if(controls.getControl("LEFTMOUSE").state().equals(Control.State.RELEASED)) {
+			logic.Math.removeDuplicateVectors(currentDrawing);
+			this.runes.add(new InactiveRune(this.currentDrawing));
+			if(runes.get(runes.size()-1) == null) {
+				runes.remove(runes.size()-1);
+			}
+			this.currentDrawing = new ArrayList<Vector>();
 		}
+		
+		//On left mouse press or hold
+		if(controls.getControl("LEFTMOUSE").state().equals(Control.State.PRESSED) || controls.getControl("LEFTMOUSE").state().equals(Control.State.HELD)) {
+			//copy mouse position
+			this.currentDrawing.add(new DVector(mousePosition.x(), mousePosition.y()));
+		}
+		
 		Vector acceleration = new DVector(0,0);
     	setAcceleration(acceleration);
-	    currentLevel.updatePlayerAtFrontMap(player.absolutePosition());
-	    HashMap<Wall, Boolean> before = currentLevel.playerAtFrontMap();
+    	
+	    Vector position1 = player.absolutePosition();
 	    player.updatePosition();
-	    currentLevel.updatePlayerAtFrontMap(player.absolutePosition());
-	    HashMap<Wall, Boolean> after = currentLevel.playerAtFrontMap();
+	    Vector position2 = player.absolutePosition();
+	    this.wallCollision(position1, position2, this.currentLevel);
 	    
-	    for(Wall wall : before.keySet()) {
-	    	if(before.get(wall) != after.get(wall)) {//if passed over wall
-	    		calculateWallCollisions(wall);
-	    	}
-	    }
 	    this.offset = player.position().mult(-1);
 	    currentLevel.offset(offset);
 	    for(Rune rune: runes) {
@@ -195,34 +189,26 @@ public class Game {
 	    for(Vector point : this.currentDrawing) {
 	    	point.add(offset);
 	    }
-	}
-	
-	public void handleDrawing() {
-		
+	    
+	    this.updateControls();
 	}
 	
 	public void setAcceleration(Vector acceleration) {
     	
-		if(buttonsPressed.get(Control.UP)) {
+		if(controls.getControl("UP").state().equals(Control.State.PRESSED) || controls.getControl("UP").state().equals(Control.State.HELD)) {
     		acceleration.add(new DVector(0,-1));
     	}
-    	if(buttonsPressed.get(Control.LEFT)) {
+    	if(controls.getControl("LEFT").state().equals(Control.State.PRESSED) || controls.getControl("UP").state().equals(Control.State.HELD)) {
     		acceleration.add(new DVector(-1,0));
     	}
-    	if(buttonsPressed.get(Control.DOWN)) {
+    	if(controls.getControl("DOWN").state().equals(Control.State.PRESSED) || controls.getControl("UP").state().equals(Control.State.HELD)) {
     		acceleration.add(new DVector(0,1));
     	}
-    	if(buttonsPressed.get(Control.RIGHT)) {
+    	if(controls.getControl("RIGHT").state().equals(Control.State.PRESSED) || controls.getControl("UP").state().equals(Control.State.HELD)) {
     		acceleration.add(new DVector(1,0));
     	}
     	player.setAcceleration(acceleration);
     }
-	
-	public void calculateWallCollisions(Wall wall) {
-		if(wall.inBounds(player.absolutePosition(), player.velocity())) {
-			wall.handleCollisions(player, center);
-		}
-	}
 	
 	
 	public void draw(PApplet app) {
