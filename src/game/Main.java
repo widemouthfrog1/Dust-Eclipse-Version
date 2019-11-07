@@ -31,20 +31,20 @@ public class Main extends PApplet {
 
 	public void mousePressed() {
 		if (mouseButton == RIGHT) {
-			game.press("RIGHTMOUSE");
+			game.press("right_mouse");
 		}
 		if (mouseButton == LEFT) {
-			game.press("LEFTMOUSE");
+			game.press("left_mouse");
 		}
 	}
 
 	public void mouseReleased() {
 
 		if (mouseButton == RIGHT) {
-			game.release("RIGHTMOUSE");
+			game.release("right_mouse");
 		}
 		if (mouseButton == LEFT) {
-			game.release("LEFTMOUSE");
+			game.release("left_mouse");
 		}
 	}
 

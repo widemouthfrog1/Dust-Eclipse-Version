@@ -2,7 +2,6 @@ package game;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 import game.object.entity.Player;
 import game.object.entity.projectile.JaggedLine;
@@ -18,12 +17,13 @@ import processing.core.PShape;
 public class Game {
 	ArrayList<Level> levels = new ArrayList<Level>();
 	ArrayList<Rune> runes = new ArrayList<Rune>();
-	Level currentLevel;
+	int currentLevel;
 	public Player player;
 	public Vector offset = new DVector(0,0);
 	Vector center;
 	ArrayList<Vector> currentDrawing = new ArrayList<Vector>();
 	RuneHandler viableRunes = new RuneHandler();
+	Vector lastMousePosition = null;
 	
 	private ControlArray controls = new ControlArray();
 	
@@ -32,8 +32,9 @@ public class Game {
 		controls.addControl("DOWN", "s");
 		controls.addControl("LEFT", "a");
 		controls.addControl("RIGHT", "d");
-		controls.addControl("LEFTMOUSE", "left mouse");
-		controls.addControl("RIGHTMOUSE", "right mouse");
+		//TODO: change "LEFTMOUSE" to "DRAW" and "RIGHTMOUSE" to "ACTIVATE"
+		controls.addControl("LEFTMOUSE", "left_mouse");
+		controls.addControl("RIGHTMOUSE", "right_mouse");
 	}
 	
 	/**
@@ -49,30 +50,39 @@ public class Game {
 		}
 	}
 	
-	public boolean press(String button) {
+	/**
+	 * Sets the state of the control that uses "button" to pressed
+	 * @param button The key or mouse button that has been pressed
+	 */
+	public void press(String button) {
 		ArrayList<Control> controlList = controls.getList();
 		for(int i = 0; i < controlList.size(); i++) {
 			Control control = controlList.get(i);
 			if(control.button().equals(button)) {
 				control.setState(Control.State.PRESSED);
-				return true;
 			}
 		}
-		return false;
 	}
 	
-	public boolean release(String button) {
+	/**
+	 * Sets the state of the control that uses "button" to released
+	 * @param button The key or mouse button that has been released
+	 */
+	public void release(String button) {
 		ArrayList<Control> controlList = controls.getList();
 		for(int i = 0; i < controlList.size(); i++) {
 			Control control = controlList.get(i);
 			if(control.button().equals(button)) {
 				control.setState(Control.State.RELEASED);
-				return true;
 			}
 		}
-		return false;
 	}
 	
+	/**
+	 * Sets the key/mouse button of control "name" to "button"
+	 * @param name The name of the control, eg: "UP"
+	 * @param button The key related to the control, eg: "w"
+	 */
 	public void setControl(String name, String button) {
 		ArrayList<Control> controlList = controls.getList();
 		for(int i = 0; i < controlList.size(); i++) {
@@ -82,16 +92,22 @@ public class Game {
 			}
 		}
 	}
-	//------------------------------------------------------------------------------------------------------------------------
-	//Constructor
+	//------------------------------------------------------------------------------------------------------------------------\\
+	/**
+	 * Creates an empty game with one level and the player at (0,0) in that level.
+	 * @param width The width of the screen
+	 * @param height The height of the screen
+	 */
 	public Game(int width, int height){
 		viableRunes.addRune(JaggedLine.class, JaggedLine.getChecks());
 		center = new DVector(width/2, height/2);
 		levels.add(new Level(center));
-		currentLevel = levels.get(0);
+		levels.add(new Level(new ArrayList<Wall>()));
+		currentLevel = 1;
     	player = new Player(center.copy());
     	createControls();
 	}
+	//------------------------------------------------------------------------------------------------------------------------\\
 	/**
 	 * Updates the position of the player in the level without changing the acceleration
 	 * Mainly exists for testing purposes
@@ -112,8 +128,8 @@ public class Game {
 		}
 		
 		//On left mouse press or hold
-		if(controls.getControl("LEFTMOUSE").state().equals(Control.State.PRESSED) || controls.getControl("LEFTMOUSE").state().equals(Control.State.HELD)) {
-			//copy mouse position
+		if( controls.getControl("LEFTMOUSE").state().equals(Control.State.PRESSED) || controls.getControl("LEFTMOUSE").state().equals(Control.State.HELD)) {
+			//copy mouse position	
 			this.currentDrawing.add(new DVector(mousePosition.x(), mousePosition.y()));
 		}
 		
@@ -150,7 +166,10 @@ public class Game {
 	
 	
 
-
+	/**
+	 * Performs updates for one game tick.
+	 * @param mousePosition The position of the mouse relative to the top left corner of the window
+	 */
 	public void update(Vector mousePosition) {
 		
 		for(Vector point : this.currentDrawing) {
@@ -172,16 +191,15 @@ public class Game {
 			this.currentDrawing.add(new DVector(mousePosition.x(), mousePosition.y()));
 		}
 		
-		Vector acceleration = new DVector(0,0);
-    	setAcceleration(acceleration);
+    	setAcceleration();
     	
 	    Vector position1 = player.absolutePosition();
 	    player.updatePosition();
 	    Vector position2 = player.absolutePosition();
-	    this.wallCollision(position1, position2, this.currentLevel);
+	    this.wallCollision(position1, position2, levels.get(currentLevel));
 	    
 	    this.offset = player.position().mult(-1);
-	    currentLevel.offset(offset);
+	    levels.get(currentLevel).offset(offset);
 	    for(Rune rune: runes) {
 	    	rune.offset(offset);
 	    }
@@ -193,26 +211,37 @@ public class Game {
 	    this.updateControls();
 	}
 	
-	public void setAcceleration(Vector acceleration) {
+	/**
+	 * Sets the acceleration of the player based on the controls being pressed. If a directional button is pressed, 
+	 * this method will set the acceleration of the player to the acceleration value passed in plus one in the given direction.
+	 * Otherwise this method will set the acceleration to the acceleration value passed in.
+	 * @param acceleration The value to set the acceleration to. If it is desired to only change the acceleration based on the controls,
+	 * this value should be the current acceleration of the player
+	 */
+	public void setAcceleration() {
+		Vector acceleration = new DVector(0,0);
     	
 		if(controls.getControl("UP").state().equals(Control.State.PRESSED) || controls.getControl("UP").state().equals(Control.State.HELD)) {
     		acceleration.add(new DVector(0,-1));
     	}
-    	if(controls.getControl("LEFT").state().equals(Control.State.PRESSED) || controls.getControl("UP").state().equals(Control.State.HELD)) {
+    	if(controls.getControl("LEFT").state().equals(Control.State.PRESSED) || controls.getControl("LEFT").state().equals(Control.State.HELD)) {
     		acceleration.add(new DVector(-1,0));
     	}
-    	if(controls.getControl("DOWN").state().equals(Control.State.PRESSED) || controls.getControl("UP").state().equals(Control.State.HELD)) {
+    	if(controls.getControl("DOWN").state().equals(Control.State.PRESSED) || controls.getControl("DOWN").state().equals(Control.State.HELD)) {
     		acceleration.add(new DVector(0,1));
     	}
-    	if(controls.getControl("RIGHT").state().equals(Control.State.PRESSED) || controls.getControl("UP").state().equals(Control.State.HELD)) {
+    	if(controls.getControl("RIGHT").state().equals(Control.State.PRESSED) || controls.getControl("RIGHT").state().equals(Control.State.HELD)) {
     		acceleration.add(new DVector(1,0));
     	}
     	player.setAcceleration(acceleration);
     }
 	
-	
+	/**
+	 * Draws the game to the Processing PApplet.
+	 * @param app The PApplet being drawn to
+	 */
 	public void draw(PApplet app) {
-		Level level = levels.get(0);
+		Level level = levels.get(currentLevel);
 		player.draw(app);
     	level.draw(app);
     	for(Rune rune : this.runes) {
